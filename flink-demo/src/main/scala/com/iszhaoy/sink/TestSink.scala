@@ -1,6 +1,6 @@
-package com.iszhaoy.wc.com.iszhaoy.sink
+package com.iszhaoy.sink
 
-import com.iszhaoy.wc.iszhaoy.apitest.SensorReading
+import com.iszhaoy.apitest.SensorReading
 import org.apache.flink.api.common.serialization.SimpleStringSchema
 import org.apache.flink.streaming.api.scala._
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer011

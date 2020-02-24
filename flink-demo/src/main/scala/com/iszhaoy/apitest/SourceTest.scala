@@ -1,4 +1,4 @@
-package com.iszhaoy.wc.iszhaoy.apitest
+package com.iszhaoy.apitest
 
 import java.util.Properties
 

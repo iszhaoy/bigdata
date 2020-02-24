@@ -1,6 +1,6 @@
-package com.iszhaoy.wc.com.iszhaoy.source
+package com.iszhaoy.source
 
-import com.iszhaoy.wc.iszhaoy.apitest.SensorReading
+import com.iszhaoy.apitest.SensorReading
 import org.apache.flink.streaming.api.functions.source.SourceFunction
 
 import scala.util.Random
