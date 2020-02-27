@@ -452,7 +452,47 @@ group by category_name
 order by hot_with_views desc;
 
 --统计视频观看数 Top50 所关联视频的所属类别 Rank
+select cate, count(*) as rank
+from (
+         select explode(t2.category) as cate
+         from (
+                  select distinct t5.r_video_id
+                  from (
+                           select explode(relatedId) as r_video_id
+                           from (select viewers, relatedid
+                                 from gulivideo_orc
+                                 order by viewers desc
+                                 limit 50) t1
+                       ) t5
+              ) t3
+                  inner join gulivideo_orc t2
+                             on t3.r_video_id = t2.videoId
+     ) t4
+group by cate
+order by rank desc;
 
+select category_name as category,
+       count(*)      as hot
+from (
+         select category_name
+         from (
+                  select distinct(t2.videoId),
+                                 t3.category
+                  from (
+                           select explode(relatedId) as videoId
+                           from (
+                                    select *
+                                    from gulivideo_orc
+                                    order by viewers
+                                        desc
+                                    limit
+                                        50) t1) t2
+                           inner join
+                       gulivideo_orc t3 on t2.videoId = t3.videoId) t4 lateral view
+             explode(category) t_catetory as category_name) t5
+group by category_name
+order by hot
+    desc;
 
 --统计每个类别中的视频热度 Top10
 
