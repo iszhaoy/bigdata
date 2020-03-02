@@ -495,12 +495,76 @@ order by hot
     desc;
 
 --统计每个类别中的视频热度 Top10
+create table gulivideo_category
+(
+    videoId    string,
+    uploader   string,
+    age        int,
+    categoryId string,
+    length     int,
+    viewers    int,
+    rate       float,
+    ratings    int,
+    comments   int,
+    relatedId  array<string>
+)
+    row format delimited
+        fields terminated by "\t"
+        collection items terminated by "&"
+    stored as orc;
 
+insert into table gulivideo_category
+select videoId,
+       uploader,
+       age,
+       categoryId,
+       length,
+       viewers,
+       rate,
+       ratings,
+       comments,
+       relatedId
+from gulivideo_orc lateral view explode(category) catetory as
+         categoryId;
+
+select videoId,
+       viewers
+from gulivideo_category
+where categoryId = "Music"
+order by viewers
+    desc
+limit
+    10;
 
 --统计每个类别中视频流量 Top10
-
+select videoId,
+       viewers,
+       ratings
+from gulivideo_category
+where categoryId = "Music"
+order by ratings
+    desc
+limit
+    10;
 
 --统计上传视频最多的用户 Top10 以及他们上传的观看次数在前 20 视频
 
-
+select videoId,
+       viewers,
+       ratings
+from gulivideo_category
+where categoryId = "Music"
+order by ratings
+    desc
+limit
+    10;
 --统计每个类别视频观看数 Top10
+select t1.*
+from (
+         select videoId,
+                categoryId,
+                viewers,
+                row_number() over (partition by categoryId order by viewers desc)
+                    rank
+         from gulivideo_category) t1
+where rank <= 10;

@@ -51,16 +51,15 @@ public class MySink extends AbstractSink implements Configurable {
                     // 6 处理实践
                     String body = new String(event.getBody());
                     logger.info(prefix + body + subfix);
+                    // 7.提交事务
+                    tx.commit();
+                    // 8. 成功提交，修改状态信息
+                    status = Status.READY;
                 }
             } else {
                 // No event found, request back-off semantics from the sink runner
                 status = Status.BACKOFF;
             }
-
-            // 7.提交事务
-            tx.commit();
-            // 8. 成功提交，修改状态信息
-            status = Status.READY;
         } catch (ChannelException e) {
             e.printStackTrace();
             // 9. 提交事务失败

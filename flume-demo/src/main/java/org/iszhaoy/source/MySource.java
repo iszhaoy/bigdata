@@ -1,7 +1,6 @@
 package org.iszhaoy.source;
 
 import org.apache.flume.Context;
-import org.apache.flume.EventDeliveryException;
 import org.apache.flume.PollableSource;
 import org.apache.flume.conf.Configurable;
 import org.apache.flume.event.SimpleEvent;
@@ -30,10 +29,9 @@ public class MySource extends AbstractSource implements Configurable, PollableSo
      * 2. 封装为事件
      * 3. 将时间发送为channel
      * @return
-     * @throws EventDeliveryException
      */
     @Override
-    public Status process() throws EventDeliveryException {
+    public Status process() {
         // 自定义soruce如果是文件或者io流，可能会出现异常导致os file == null 又因为process是循环调用的，所以可以在开始的时候每次都校验一下全局变量，如果为null，就重新初始化
         Status status = null;
 
