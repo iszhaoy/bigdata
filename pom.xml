@@ -32,5 +32,6 @@
         <module>saprkStreaming-demo</module>
         <module>flink-demo</module>
         <module>hadoop-demo</module>
+        <module>hbase-weibo</module>
     </modules>
 </project>

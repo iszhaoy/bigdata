@@ -10,11 +10,11 @@
 
 
     <groupId>org.iszhaoy</groupId>
-    <artifactId>flume-project</artifactId>
+    <artifactId>flume-demo</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <modelVersion>4.0.0</modelVersion>
-    <name>flume-project</name>
+    <name>flume-demo</name>
     <!-- FIXME change it to the project's website -->
     <url>http://www.example.com</url>
     <properties>

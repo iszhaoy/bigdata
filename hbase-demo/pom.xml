@@ -9,9 +9,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>hbase-project</artifactId>
+    <artifactId>hbase-demo</artifactId>
 
-    <name>hbase-project</name>
+    <name>hbase-demo</name>
     <!-- FIXME change it to the project's website -->
     <url>http://www.example.com</url>
 

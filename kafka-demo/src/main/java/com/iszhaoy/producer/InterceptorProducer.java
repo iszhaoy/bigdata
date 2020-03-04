@@ -1,4 +1,4 @@
-package producer;
+package com.iszhaoy.producer;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -41,6 +41,7 @@ public class InterceptorProducer {
 
             ProducerRecord<String, String> record = new
                     ProducerRecord<>(topic, "message" + i);
+            System.out.println(record);
             producer.send(record);
         }
 

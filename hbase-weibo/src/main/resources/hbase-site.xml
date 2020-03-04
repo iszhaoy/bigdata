@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <property>
+        <name>hbase.rootdir</name>
+        <value>hdfs://hadoop01:9000/hbase</value>
+    </property>
+    <property>
+        <name>hbase.cluster.distributed</name>
+        <value>true</value>
+    </property>
+    <!--配置Zookeeper的连接地址与端口号-->
+    <property>
+        <name>hbase.zookeeper.quorum</name>
+        <value>hadoop01,hadoop02,hadoop03</value>
+    </property>
+    <property>
+        <name>hbase.zookeeper.property.clientPort</name>
+        <value>2181</value>
+        <source>2181</source>
+    </property>
+</configuration>
