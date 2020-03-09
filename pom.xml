@@ -33,5 +33,7 @@
         <module>flink-demo</module>
         <module>hadoop-demo</module>
         <module>hbase-weibo</module>
+        <module>flink-UserBehaviorAnalysis</module>
+
     </modules>
 </project>

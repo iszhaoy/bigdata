@@ -44,7 +44,7 @@ public class HbaseDao {
         Put contPut = new Put(Bytes.toBytes(rowKey));
 
         // 5. 给Put对象赋值
-        contPut.addColumn(Bytes.toBytes(Constants.CONTEENT_TABLE_CF), Bytes.toBytes("content"),
+        contPut.addColumn(Bytes.toBytes(Constants.CONTEENT_TABLE_CF), Bytes.toBytes("content"), ts,
                 Bytes.toBytes(content));
 
         // 6. 执行插入数据操作
@@ -69,9 +69,9 @@ public class HbaseDao {
             // 5.. 构建微博收件箱表的Put对象
             Put inboxPut = new Put(CellUtil.cloneQualifier(cell)); // CellUtil.cloneQualifier(cell)
             // 获取列信息，而列的信息就是inbox表中的rowkey
-
+            System.out.println("rk" + rowKey + "content" + content);
             // 6. 给收件箱表的Put对象赋值
-            inboxPut.addColumn(Bytes.toBytes(Constants.INBOX_TABLE_CF), Bytes.toBytes(uid), Bytes.toBytes(content));
+            inboxPut.addColumn(Bytes.toBytes(Constants.INBOX_TABLE_CF), Bytes.toBytes(uid), ts, Bytes.toBytes(rowKey));
 
             // 7. 将收件箱表put对象存入集合
             inboxPuts.add(inboxPut);

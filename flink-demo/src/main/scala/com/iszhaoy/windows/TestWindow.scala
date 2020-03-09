@@ -2,7 +2,7 @@ package com.iszhaoy.windows
 
 import com.iszhaoy.apitest.SensorReading
 import org.apache.flink.streaming.api.TimeCharacteristic
-import org.apache.flink.streaming.api.functions.AssignerWithPeriodicWatermarks
+import org.apache.flink.streaming.api.functions.{AssignerWithPeriodicWatermarks, AssignerWithPunctuatedWatermarks}
 import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor
 import org.apache.flink.streaming.api.scala._
 import org.apache.flink.streaming.api.watermark.Watermark
@@ -55,12 +55,12 @@ class MyAssigner() extends AssignerWithPeriodicWatermarks[SensorReading] {
 }
 
 
-//class MyAssigner() extends AssignerWithPunctuatedWatermarks[SensorReading] {
-//  override def checkAndGetNextWatermark(lastElement: SensorReading, extractedTimestamp: Long): Watermark = {
-//    new Watermark(extractedTimestamp)
-//  }
-//
-//  override def extractTimestamp(element: SensorReading, previousElementTimestamp: Long): Long = {
-//    element.timestamp * 1000
-//  }
-//}
+class MyAssigner2() extends AssignerWithPunctuatedWatermarks[SensorReading] {
+  override def checkAndGetNextWatermark(lastElement: SensorReading, extractedTimestamp: Long): Watermark = {
+    new Watermark(extractedTimestamp)
+  }
+
+  override def extractTimestamp(element: SensorReading, previousElementTimestamp: Long): Long = {
+    element.timestamp * 1000
+  }
+}

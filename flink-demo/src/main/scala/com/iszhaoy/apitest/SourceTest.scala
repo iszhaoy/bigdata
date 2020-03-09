@@ -7,7 +7,6 @@ import org.apache.flink.streaming.api.scala._
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer011
 
 // 传感器读数样例类
-case class SensorReading(id: String, timestamp: Long, temperature: Double)
 
 object SourceTest {
   def main(args: Array[String]): Unit = {
