@@ -27,6 +27,7 @@ object UniqueVisitor {
     })
       .assignAscendingTimestamps(_.timestamp * 1000L)
       .filter(_.behavior == "pv")
+      //
       .timeWindowAll(Time.hours(1))
       .apply(new AllWindowFunction[UserBehavior,UvCount,TimeWindow] {
         override def apply(window: TimeWindow, input: Iterable[UserBehavior], out: Collector[UvCount]): Unit = {
