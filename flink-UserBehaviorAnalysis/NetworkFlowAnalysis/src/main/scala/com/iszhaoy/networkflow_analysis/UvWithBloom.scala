@@ -61,8 +61,8 @@ class MyTrigger() extends Trigger[(String, Long), TimeWindow] {
 
 // 定义一个布隆过滤器(重点)
 class Bloom(size: Long) extends Serializable {
+  // 1024 = 2^10
   // 位图的总大小
-  // 1024 2^10
   private val cap = if (size > 0) size else 1 << 27
 
   // 定义hash函数
@@ -77,10 +77,11 @@ class Bloom(size: Long) extends Serializable {
 
 
 class UvCountWithBloom() extends ProcessWindowFunction[(String, Long), UvCount, String, TimeWindow] {
+  // ProcessWindowFunction 是全窗口函数，先把窗口所有数据收集起来，等到计算的时候会遍历所有数据
 
   // 定义redis的连接
   lazy val jedis = new Jedis("hadoop01", 6379)
-  lazy val bloom = new Bloom(1 << 29) // 512m
+  lazy val bloom = new Bloom(1 << 29) // 512m   1024 * 1024 * 2 ^ 9
 
   override def process(key: String, context: Context, elements: Iterable[(String, Long)], out: Collector[UvCount]): Unit = {
     // 位图的存储方式，key是windowEnd,value就是bitmap

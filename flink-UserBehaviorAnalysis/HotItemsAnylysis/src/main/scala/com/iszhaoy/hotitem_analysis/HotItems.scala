@@ -53,8 +53,8 @@ object HotItems {
 
 
     val dataStream: DataStream[UserBehavior] = env
-      //      .readTextFile("flink-UserBehaviorAnalysis/HotItemsAnylysis/src/main/resources/UserBehavior.csv")
-      .addSource(new FlinkKafkaConsumer[String]("hotitems", new SimpleStringSchema(), properties))
+            .readTextFile("flink-UserBehaviorAnalysis/HotItemsAnylysis/src/main/resources/UserBehavior.csv")
+//      .addSource(new FlinkKafkaConsumer[String]("hotitems", new SimpleStringSchema(), properties))
       .map(data => {
         val dataArray: Array[String] = data.split(",")
         UserBehavior(dataArray(0).trim.toLong, dataArray(1).trim.toLong, dataArray(2).trim.toInt, dataArray(3).trim,

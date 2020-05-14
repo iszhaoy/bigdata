@@ -28,7 +28,6 @@ object SourceTest {
     // 3. 从不同的元素中读取
     env.fromElements(1, 2, 3, "hello").print("stream3")
 
-
     // 4.从kafka读取数据
     val properties = new Properties()
     properties.setProperty("bootstrap.servers", "bigdata01:9092")

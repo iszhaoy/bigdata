@@ -33,7 +33,7 @@ object ProcessTest {
     env.setRestartStrategy(RestartStrategies.fixedDelayRestart(3, 500))
 
 
-    val stream: DataStream[String] = env.socketTextStream("hadoop01", 9999)
+    val stream: DataStream[String] = env.socketTextStream("bigdata02", 9999)
     val dataStream: DataStream[SensorReading] = stream.map(data => {
       val dataArry: Array[String] = data.split(",")
       SensorReading(dataArry(0), dataArry(1).toLong, dataArry(2).toDouble)
@@ -48,9 +48,9 @@ object ProcessTest {
     //      .process(new TimeIncreAlert())
 
     val processedStream2: DataStream[(String, Double, Double)] = dataStream
-      .flatMap(new TimechangeAlert2(10.0))
-    //        .keyBy(_.id)
-    //            .process(new TimechangeAlert(10.0))
+      //      .flatMap(new TimechangeAlert2(10.0))
+      .keyBy(_.id)
+      .process(new TimechangeAlert(10.0))
 
     dataStream.print("dataStream")
     //    processedStream.print("processedStream")
@@ -97,7 +97,7 @@ class TimechangeAlert(threshold: Double) extends KeyedProcessFunction[String, Se
     // 获取上次的温度值
     val lastTemp: Double = lasttempState.value()
 
-    // 用当前的问题之和上次的求差， 如果大于阈值就报警
+    // 用当前的温度之和上次的求差， 如果大于阈值就报警
     val diff: Double = (value.temperature - lastTemp).abs
 
     if (diff > threshold) {
@@ -131,7 +131,7 @@ class TimeIncreAlert() extends KeyedProcessFunction[String, SensorReading, Strin
     // 温度连续上升且没有注册定时器，则注册定时器
     if (value.temperature > preTemp && currentTimerTs == 0) {
       val timeTs: Long = ctx.timerService().currentProcessingTime() + 10000L
-      // registerProcessingTimeTimer 使劲是从1970-01-01 00:00:00 开始的
+      // registerProcessingTimeTimer 时间是从1970-01-01 00:00:00 开始的
       ctx.timerService().registerProcessingTimeTimer(timeTs)
       currentTimer.update(timeTs)
     } else if (preTemp > value.temperature || preTemp == 0) {
