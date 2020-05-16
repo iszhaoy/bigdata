@@ -12,6 +12,7 @@
     <modules>
         <module>HotItemsAnalysis</module>
         <module>NetWorkFlowAnalysis</module>
+        <module>Market_Analysis</module>
     </modules>
     <artifactId>flink-UserBehaviorAnalysis-Review</artifactId>
 
