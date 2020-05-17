@@ -2,11 +2,10 @@ package com.iszhaoy.review.wc
 
 
 import com.iszhaoy.apitest.SensorReading
-import org.apache.flink.api.common.state.ValueState
-import org.apache.flink.streaming.api.scala.{DataStream, OutputTag, StreamExecutionEnvironment}
 import org.apache.flink.api.scala._
 import org.apache.flink.streaming.api.TimeCharacteristic
-import org.apache.flink.streaming.api.functions.{KeyedProcessFunction, ProcessFunction}
+import org.apache.flink.streaming.api.functions.KeyedProcessFunction
+import org.apache.flink.streaming.api.scala.{DataStream, OutputTag, StreamExecutionEnvironment}
 import org.apache.flink.util.Collector
 
 /**
