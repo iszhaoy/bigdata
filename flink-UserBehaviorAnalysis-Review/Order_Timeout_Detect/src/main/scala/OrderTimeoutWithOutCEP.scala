@@ -1,51 +1,40 @@
-package com.test.orderpay_detect
-
 import org.apache.flink.api.common.state.{ValueState, ValueStateDescriptor}
+import org.apache.flink.api.scala._
 import org.apache.flink.streaming.api.TimeCharacteristic
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction
-import org.apache.flink.streaming.api.scala._
+import org.apache.flink.streaming.api.scala.{DataStream, OutputTag, StreamExecutionEnvironment}
 import org.apache.flink.util.Collector
 
 /**
  * this is a study project
- * 有问题
  *
  * @author iszhaoy
- * @date 2020/3/13 14:29
+ * @date 2020/5/18 11:40
  * @version 1.0
  */
-object OUtTimeoutWithoutCep {
-
+object OrderTimeoutWithOutCEP {
   val orderTimeoutOutPutTag: OutputTag[OrderResult] = new OutputTag[OrderResult]("orderTimeoutTag")
 
   def main(args: Array[String]): Unit = {
-    val env: StreamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment
-    env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
+    val env = StreamExecutionEnvironment.getExecutionEnvironment
     env.setParallelism(1)
-
-    // 读取订单数据
-    val resource = getClass.getResource("/OrderLog.csv")
-    val orderEventStream = env.readTextFile(resource.getPath)
-      //    val orderEventStream = env.socketTextStream("hadoop01", 7777)
+    env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
+    val orderEventStream = env.readTextFile(getClass.getResource("OrderLog.csv").getPath)
       .map(data => {
         val dataArray = data.split(",")
-        OrderEvent(dataArray(0).trim.toLong, dataArray(1).trim, dataArray(2).trim, dataArray(3).trim.toLong)
+        OrderEvent(dataArray(0).trim.toLong, dataArray(1).trim, dataArray(3).trim.toLong)
       })
-      .assignAscendingTimestamps(_.eventTime * 1000L)
+      .assignAscendingTimestamps(_.eventTime * 1000)
       .keyBy(_.orderId)
 
-    // 定义processFunction进行超时检测
-    val timeoutWarningStream = orderEventStream.process(new OrderTimeoutWarning())
-    timeoutWarningStream.print()
+    val resultDataStream: DataStream[OrderResult] = orderEventStream.process(new OrderTimeoutWarning())
+    resultDataStream
+      .print("success")
+    resultDataStream.getSideOutput(orderTimeoutOutPutTag).print("timeout")
 
-    //    val orderResultStream = orderEventStream.process(new OrderPayMatch())
-    //
-    //    orderResultStream.print("successful")
-    //    orderEventStream.getSideOutput(orderTimeoutOutPutTag).print("timeout")
-
-    env.execute("OUtTimeoutWithCep")
-
+    env.execute("OrderTimeoutWithOutCEP")
   }
+
 
   class OrderPayMatch() extends KeyedProcessFunction[Long, OrderEvent, OrderResult] {
     // 保存pay是否来过的状态
@@ -115,7 +104,6 @@ object OUtTimeoutWithoutCep {
   }
 
 }
-
 
 class OrderTimeoutWarning() extends KeyedProcessFunction[Long, OrderEvent, OrderResult] {
 

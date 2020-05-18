@@ -33,8 +33,8 @@ object OrderTimeout {
     // 读取订单数据
     val resource = getClass.getResource("/OrderLog.csv")
 
-    //    val orderEventStream = env.readTextFile(resource.getPath)
-    val orderEventStream = env.socketTextStream("hadoop01", 7777)
+    val orderEventStream = env.readTextFile(resource.getPath)
+      //    val orderEventStream = env.socketTextStream("hadoop01", 7777)
       .map(data => {
         val dataArray = data.split(",")
         OrderEvent(dataArray(0).trim.toLong, dataArray(1).trim, dataArray(2).trim, dataArray(3).trim.toLong)
@@ -76,7 +76,7 @@ class OrderTimeoutSelectFunction() extends PatternTimeoutFunction[OrderEvent, Or
 // 正常支付时间序列处理函数
 class OrderPaySelectFunction() extends PatternSelectFunction[OrderEvent, OrderResult] {
   override def select(map: util.Map[String, util.List[OrderEvent]]): OrderResult = {
-    val payedOrderId = map.get("begin").iterator().next().orderId
+    val payedOrderId = map.get("follow").iterator().next().orderId
     OrderResult(payedOrderId, "payed successful!")
   }
 }

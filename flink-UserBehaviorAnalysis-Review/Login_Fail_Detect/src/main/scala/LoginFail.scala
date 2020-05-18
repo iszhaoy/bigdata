@@ -5,6 +5,8 @@ import org.apache.flink.streaming.api.TimeCharacteristic
 import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
 import org.apache.flink.api.scala._
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction
+import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor
+import org.apache.flink.streaming.api.windowing.time.Time
 import org.apache.flink.util.Collector
 import org.slf4j.event.LoggingEvent
 
@@ -28,7 +30,9 @@ object LoginFail {
         val dataArray: Array[String] = data.split(",")
         LoginEvent(dataArray(0).trim.toLong, dataArray(1).trim, dataArray(2).trim, dataArray(3).trim.toLong)
       })
-      .assignAscendingTimestamps(_.eventTime * 1000L)
+      .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor[LoginEvent](Time.milliseconds(3000)) {
+        override def extractTimestamp(element: LoginEvent) = element.eventTime * 1000L
+      })
 
     dataStream.print("source data")
 
@@ -43,31 +47,35 @@ object LoginFail {
 
 class MyKeyedProcessFunction(sconds: Int) extends KeyedProcessFunction[Long, LoginEvent, LoginEvent] {
 
-  lazy val loginListState: ListState[LoginEvent] = getRuntimeContext.getListState(new ListStateDescriptor[LoginEvent]("loginListState", classOf[LoginEvent]))
-  lazy val tsValueState: ValueState[Long] = getRuntimeContext.getState(new ValueStateDescriptor[Long]("tsValueState", classOf[Long]))
+  lazy val loginListState: ListState[LoginEvent] = getRuntimeContext.getListState(new ListStateDescriptor[LoginEvent]
+  ("loginListState", classOf[LoginEvent]))
+  lazy val tsValueState: ValueState[Long] = getRuntimeContext.getState(new ValueStateDescriptor[Long]("tsValueState",
+    classOf[Long]))
 
-  override def processElement(value: LoginEvent, ctx: KeyedProcessFunction[Long, LoginEvent, LoginEvent]#Context, out: Collector[LoginEvent]): Unit = {
+  override def processElement(value: LoginEvent, ctx: KeyedProcessFunction[Long, LoginEvent, LoginEvent]#Context,
+                              out: Collector[LoginEvent]): Unit = {
 
     if (value.eventType == "fail") {
-    // 来一次登录失败的请求，就保存在list中
+      // 来一次登录失败的请求，就保存在list中
       // 将事件加入
       loginListState.add(value)
 
     }
-      // 定时器 2秒后
-    val ts = value.eventTime  * 1000L + sconds * 1000L
+    // 定时器 2秒后
+    val ts = value.eventTime * 1000L + sconds * 1000L
     tsValueState.update(ts)
     ctx.timerService().registerEventTimeTimer(ts)
-//
-//    else if (value.eventType == "success") {
-//      ctx.timerService().deleteProcessingTimeTimer(tsValueState.value())
-//      loginListState.clear()
-//      tsValueState.clear()
-//    }
+    //
+    //    else if (value.eventType == "success") {
+    //      ctx.timerService().deleteProcessingTimeTimer(tsValueState.value())
+    //      loginListState.clear()
+    //      tsValueState.clear()
+    //    }
 
   }
 
-  override def onTimer(timestamp: Long, ctx: KeyedProcessFunction[Long, LoginEvent, LoginEvent]#OnTimerContext, out: Collector[LoginEvent]): Unit = {
+  override def onTimer(timestamp: Long, ctx: KeyedProcessFunction[Long, LoginEvent, LoginEvent]#OnTimerContext,
+                       out: Collector[LoginEvent]): Unit = {
     val events: lang.Iterable[LoginEvent] = loginListState.get()
     import scala.collection.JavaConversions._
     val list: ListBuffer[LoginEvent] = ListBuffer()

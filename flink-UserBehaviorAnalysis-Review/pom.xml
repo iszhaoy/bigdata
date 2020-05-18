@@ -14,6 +14,7 @@
         <module>NetWorkFlowAnalysis</module>
         <module>Market_Analysis</module>
         <module>Login_Fail_Detect</module>
+        <module>Order_Timeout_Detect</module>
     </modules>
     <artifactId>flink-UserBehaviorAnalysis-Review</artifactId>
 
