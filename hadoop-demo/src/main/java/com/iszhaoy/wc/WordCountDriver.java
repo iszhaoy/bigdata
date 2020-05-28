@@ -1,6 +1,7 @@
 package com.iszhaoy.wc;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
@@ -35,6 +36,11 @@ public class WordCountDriver {
 
         // 6 设置输入和输出路径
         FileInputFormat.setInputPaths(job, new Path("hadoop-demo/src/main/data/hello.txt"));
+        Path path = new Path("hadoop-demo/src/main/data/result");
+        FileSystem fileSystem = path.getFileSystem(configuration);
+        if (fileSystem.exists(path)) {
+            fileSystem.delete(path, true);
+        }
         FileOutputFormat.setOutputPath(job, new Path("hadoop-demo/src/main/data/result"));
 
         // 7 提交
