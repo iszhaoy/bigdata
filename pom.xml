@@ -29,12 +29,13 @@
         <module>kafka-demo</module>
         <module>spark-demo</module>
         <module>sparkSQL-demo</module>
-        <module>saprkStreaming-demo</module>
+        <module>sparkStreaming-demo</module>
         <module>flink-demo</module>
         <module>hadoop-demo</module>
         <module>hbase-weibo</module>
         <module>flink-UserBehaviorAnalysis</module>
         <module>scala-demo</module>
         <module>flink-UserBehaviorAnalysis-Review</module>
+        <module>JUC</module>
     </modules>
 </project>
