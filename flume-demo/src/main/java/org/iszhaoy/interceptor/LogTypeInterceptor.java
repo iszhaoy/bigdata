@@ -9,11 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author zhaoyu
- * @date 2020/6/13
- */
-public class LogETLInterceptor implements Interceptor {
+public class LogTypeInterceptor implements Interceptor {
 
     @Override
     public void initialize() {
@@ -22,36 +18,31 @@ public class LogETLInterceptor implements Interceptor {
 
     @Override
     public Event intercept(Event event) {
-        // 清洗数据 ETL {} => { xxx 脏数据
+
+        // 区分类型
+        // 区分start类型和event类型
         byte[] body = event.getBody();
         String log = new String(body, Charset.forName("UTF-8"));
-        // 区分类型处理
+
+        // 判断事件的头部，然后设置成不同的主题
+        Map<String, String> headers = event.getHeaders();
         if (log.contains("start")) {
-            //
-            // 验证服务器启动日志逻辑
-            if (LogUtils.validateStart(log)) {
-                return event;
-            }
+            headers.put("topic", "topic_start");
         } else {
-            // 检验时间日志逻辑
-            if (LogUtils.validateEvent(log)) {
-                return event;
-            }
+            headers.put("topic", "topic_event");
         }
 
-        return null;
+        return event;
     }
 
     @Override
     public List<Event> intercept(List<Event> events) {
-        // 多Event处理
+
         List<Event> list = new ArrayList<>();
 
-        // 取出合格的校验数据
         for (Event event : events) {
-            if (event != null) {
-                list.add(event);
-            }
+            Event intercept = intercept(event);
+            list.add(intercept);
         }
 
         return list;
@@ -66,7 +57,7 @@ public class LogETLInterceptor implements Interceptor {
 
         @Override
         public Interceptor build() {
-            return new LogETLInterceptor();
+            return new LogTypeInterceptor();
         }
 
         @Override

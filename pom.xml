@@ -38,5 +38,6 @@
         <module>flink-UserBehaviorAnalysis-Review</module>
         <module>JUC</module>
         <module>DataWareHouse</module>
+        <module>hive-function</module>
     </modules>
 </project>
