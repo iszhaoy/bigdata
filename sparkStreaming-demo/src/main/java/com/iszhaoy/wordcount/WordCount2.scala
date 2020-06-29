@@ -14,7 +14,6 @@ object WordCount2 {
     val sparkConf = new SparkConf().setMaster("local[*]").setAppName("StreamWordCount")
 
 
-
     //2.初始化SparkStreamingContext
     val ssc = new StreamingContext(sparkConf, Seconds(5))
 

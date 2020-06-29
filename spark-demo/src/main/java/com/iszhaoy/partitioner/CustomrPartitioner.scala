@@ -7,6 +7,9 @@ class CustomrPartitioner(partitions: Int) extends Partitioner {
 
   // spark不
   override def getPartition(key: Any): Int = {
-    0
+    key match {
+      case null => 0
+      case _ => key.hashCode() % partitions - 1;
+    }
   }
 }

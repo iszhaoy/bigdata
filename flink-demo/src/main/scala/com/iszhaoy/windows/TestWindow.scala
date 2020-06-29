@@ -15,7 +15,7 @@ object TestWindow {
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
     env.setParallelism(1)
     val streamFormFile: DataStream[String] = env.socketTextStream("localhost", 9999)
-    val dataStream: DataStream[SensorReading] = streamFormFile.map(fun = data => {
+    val dataStream: DataStream[SensorReading] = streamFormFile.map(data => {
       val dataArry: Array[String] = data.split(",")
       SensorReading(dataArry(0), dataArry(1).toLong, dataArry(2).toDouble)
     })

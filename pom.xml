@@ -39,5 +39,6 @@
         <module>JUC</module>
         <module>DataWareHouse</module>
         <module>hive-function</module>
+        <module>sparkStreaming-kafka</module>
     </modules>
 </project>
