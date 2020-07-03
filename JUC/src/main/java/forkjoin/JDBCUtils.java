@@ -1,86 +1,63 @@
 package forkjoin;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import com.alibaba.druid.pool.DruidDataSourceFactory;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
-
 public class JDBCUtils {
-	public static void main(String[] args) {
-		System.out.println(JDBCUtils.getConn());
-	}
-	private static Properties prop = new Properties();
+    public static void main(String[] args) {
+        try {
+            System.out.println(JDBCUtils.getConnection());
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+    private static DataSource ds;
 
-	private JDBCUtils() {
-	}
+    static {
+        Properties pro = new Properties();
+        try {
+            pro.load(JDBCUtils.class.getClassLoader().getResourceAsStream("config.properties"));
+            ds = DruidDataSourceFactory.createDataSource(pro);
+        } catch (Exception e) {
+            // TODO 自动生成的 catch 块
+            e.printStackTrace();
+        }
+        System.out.println(ds);
+    }
 
-	static {
-		try {
-			ClassLoader classLoader = JDBCUtils.class.getClassLoader();
-			String path = classLoader.getResource("config.properties")
-					.getPath();
-			prop.load(new FileInputStream(path));
+    public static Connection getConnection() throws SQLException {
+        return ds.getConnection();
+    }
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
+    public static void close(ResultSet rs, Statement st, Connection con) {
+        if (rs != null)
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        if (st != null)
+            try {
+                st.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        if (con != null)
+            try {
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
 
-	}
-	
-	public static Connection getConn() {
-		Connection conn;
-		try {
-			String driverClass = prop.getProperty("driverClass");
-			String jdbcUrl = prop.getProperty("jdbcUrl");
-			String user = prop.getProperty("user");
-			String password = prop.getProperty("password");
+    }
 
-			Class.forName(driverClass);
-			conn = DriverManager.getConnection(jdbcUrl, user, password);
-			return conn;
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
-	}
-
-	public static void close(Connection conn, Statement stat, ResultSet rs) {
-		if (rs != null) {
-			try {
-				rs.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} finally {
-				rs = null;
-			}
-		}
-		if (stat != null) {
-			try {
-				stat.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} finally {
-				stat = null;
-			}
-		}
-		if (conn != null) {
-			try {
-				conn.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} finally {
-				conn = null;
-			}
-		}
-
-	}
-
+    public static DataSource getDataSource() {
+        return ds;
+    }
 }

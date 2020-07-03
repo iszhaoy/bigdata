@@ -1,16 +1,11 @@
 package forkjoin;
 
-import com.oracle.webservices.internal.api.databinding.DatabindingMode;
-
-import javax.sound.sampled.Line;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveTask;
@@ -28,6 +23,7 @@ public class Demo01 {
                 BufferedInputStream bis = new BufferedInputStream(new FileInputStream(new File(path)));
                 BufferedReader in = new BufferedReader(new InputStreamReader(bis, StandardCharsets.UTF_8), 10 * 1024 * 1024)
         ) {
+            ForkJoinPool pool = new ForkJoinPool(5);
             while (in.ready()) {
                 String line = in.readLine();
                 String[] arr = line.split(",");        //将读取的每一行以 , 号分割成数组
@@ -38,14 +34,13 @@ public class Demo01 {
                 if (++count % throld == 0) {
                     System.out.println("\n总共读取Txt文件中" + i + "条数据");
                     // 一个批次,forkjoin 插入数据库
-                    ForkJoinPool pool = new ForkJoinPool();
                     ForkJoinTask<Integer> taskFuture = pool.submit(new MyForkJoinTask(infosList));
 
                     Integer result = taskFuture.get();
                     System.out.println(result);
                 }
             }
-
+            pool.shutdown();
             long end = System.currentTimeMillis();
             System.out.println((end - start) / 1000 + "s");
         } catch (Exception e) {
@@ -69,9 +64,9 @@ class MyForkJoinTask extends RecursiveTask<Integer> {
             Connection conn = null;
             PreparedStatement ps = null;
             try {
-                conn = JDBCUtils.getConn();
+                conn = JDBCUtils.getConnection();
                 conn.setAutoCommit(false);
-                ps = conn.prepareStatement("insert  into table (c1,c2,c3) values(?,?,?)");
+                ps = conn.prepareStatement("insert into info (c1,c2,c3) values(?,?,?)");
                 for (Infos infos : infosList) {
                     ps.setString(1, infos.getC1());
                     ps.setString(2, infos.getC2());

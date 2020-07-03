@@ -10,4 +10,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>JUC</artifactId>
+
+    <dependencies>
+        <!-- https://mvnrepository.com/artifact/com.alibaba/druid -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+            <version>1.1.20</version>
+        </dependency>
+    </dependencies>
 </project>

@@ -19,7 +19,7 @@ object TestWindow {
       val dataArry: Array[String] = data.split(",")
       SensorReading(dataArry(0), dataArry(1).toLong, dataArry(2).toDouble)
     })
-      .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor[SensorReading](Time.seconds(2)) {
+      .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor[SensorReading](Time.seconds(1)) {
         override def extractTimestamp(element: SensorReading): Long = {
           element.timestamp * 1000
         }
