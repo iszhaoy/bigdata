@@ -1,9 +1,13 @@
-package forkjoin;
+package exec;
+
+import exec.FileToBlock;
+import exec.JDBCUtils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.Objects;
 
 /**
  * this is a study project
@@ -15,7 +19,7 @@ import java.sql.PreparedStatement;
 public class Main2 {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        String path = "D:\\workspace\\iszhaoy\\bigdata\\bigdata\\JUC\\src\\main\\resources\\data.txt";
+        String path = Objects.requireNonNull(FileToBlock.class.getClassLoader().getResource("data.txt")).getPath();
         try (
                 BufferedInputStream bis = new BufferedInputStream(new FileInputStream(new File(path)));
                 BufferedReader in = new BufferedReader(new InputStreamReader(bis, StandardCharsets.UTF_8), 10 * 1024 * 1024)
@@ -24,7 +28,7 @@ public class Main2 {
             conn = JDBCUtils.getConnection();
             conn.setAutoCommit(false);
             PreparedStatement ps = null;
-            ps = conn.prepareStatement("INSERT INTO INFO (C0,C1,C2,C3) VALUES(?,?,?,?)");
+            ps = conn.prepareStatement("INSERT INTO info (C0,C1,C2,C3) VALUES(?,?,?,?)");
             int count = 0;
             while (in.ready()) {
                 String line = in.readLine();
@@ -46,14 +50,14 @@ public class Main2 {
 
                     }
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
                 ps.executeBatch();
                 conn.commit();
                 ps.clearBatch();
             }
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
         long end = System.currentTimeMillis();
         System.out.println((end - start) / 1000 + "s");

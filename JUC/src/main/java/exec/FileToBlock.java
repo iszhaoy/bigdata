@@ -1,6 +1,7 @@
 package exec;
 
 import java.io.File;
+import java.util.Objects;
 
 /**
  * this is a study project
@@ -13,7 +14,7 @@ public class FileToBlock  {
     public static void fileToBlock() {
         //从FileQueue中获取一个日志文件,如果没没有会产生阻塞
         try {
-            File file = new File("D:\\workspace\\iszhaoy\\bigdata\\bigdata\\JUC\\src\\main\\resources\\data.txt");
+            File file = new File(Objects.requireNonNull(FileToBlock.class.getClassLoader().getResource("data.txt")).getPath());
             long length = file.length();
             //计算切块的数量
             long num = length % GlobalEnv.BLOCK_SIZE == 0 ?

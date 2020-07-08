@@ -1,7 +1,5 @@
 package exec;
 
-import forkjoin.JDBCUtils;
-
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -20,7 +18,7 @@ public class MapperRunner implements Callable<Long> {
 
     public Long call() {
         try {
-            File file = new File(fs.getPath().toString());
+            File file = new File(fs.getPath());
             long start = fs.getStart();
             long end = start + fs.getLength();
 
@@ -69,8 +67,9 @@ public class MapperRunner implements Callable<Long> {
             try {
                 conn = JDBCUtils.getConnection();
                 conn.setAutoCommit(false);
-                ps = conn.prepareStatement("INSERT INTO INFO (C0,C1,C2,C3) VALUES(?,?,?,?)");
+                ps = conn.prepareStatement("INSERT INTO info (C0,C1,C2,C3) VALUES(?,?,?,?)");
                 while ((line = reader.readLine()) != null) {
+//                    System.out.println(line);
                     String[] arr = line.split(",");        //将读取的每一行以 , 号分割成数组
                     if (arr.length < 3) continue;            //arr数组长度大于3才是一条完整的数据
                     ps.setString(1, null);

@@ -14,7 +14,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class GlobalEnv {
     public static final long BLOCK_SIZE = 300000L;
-    public static final long BATCH_SIZE = 1000;
+    public static final long BATCH_SIZE = 5000;
 
     private static BlockingQueue<FileSplit> splitQueue=new LinkedBlockingQueue<>();
     private static List<FileSplit> splitList =new LinkedList<>();
