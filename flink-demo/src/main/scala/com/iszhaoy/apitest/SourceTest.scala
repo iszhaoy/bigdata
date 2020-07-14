@@ -22,7 +22,7 @@ object SourceTest {
     stream1.print("stream1").setParallelism(6)
 
     // 2 从文件中读取数据
-    val stream2: DataStream[String] = env.readTextFile("flink-demo\\src\\main\\resources\\sernsor.txt")
+    val stream2: DataStream[String] = env.readTextFile("flink-demo\\src\\main\\resources\\sensor.txt")
     stream2.print("stream2").setParallelism(1)
 
     // 3. 从不同的元素中读取

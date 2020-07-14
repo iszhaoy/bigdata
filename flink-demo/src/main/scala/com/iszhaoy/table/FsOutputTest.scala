@@ -21,7 +21,7 @@ object FsOutputTest {
     env.setParallelism(1)
     val tableEnv = StreamTableEnvironment.create(env)
 
-    tableEnv.connect(new FileSystem().path(getClass.getResource("/sernsor.txt").getPath))
+    tableEnv.connect(new FileSystem().path(getClass.getResource("/sensor.txt").getPath))
       .withFormat(new Csv)
       .withSchema(new Schema()
         .field("id", DataTypes.STRING())

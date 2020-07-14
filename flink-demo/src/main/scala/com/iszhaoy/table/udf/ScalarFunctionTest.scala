@@ -25,7 +25,7 @@ object ScalarFunctionTest {
     val tableEnv: StreamTableEnvironment = StreamTableEnvironment.create(env)
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
     env.setParallelism(1)
-    val path = getClass.getClassLoader.getResource("sernsor.txt").getPath
+    val path = getClass.getClassLoader.getResource("sensor.txt").getPath
     val dataStream: DataStream[SensorReading] = env.readTextFile(path).map(data => {
       val dataArry: Array[String] = data.split(",")
       SensorReading(dataArry(0), dataArry(1).toLong, dataArry(2).toDouble)

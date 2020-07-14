@@ -53,6 +53,7 @@
         <module>DataWareHouse</module>
         <module>hive-function</module>
         <module>sparkStreaming-kafka</module>
+        <module>guava-demo</module>
     </modules>
 
 </project>

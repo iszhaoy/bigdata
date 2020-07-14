@@ -1,4 +1,4 @@
-package com.iszhaoy.review.wc
+package com.iszhaoy.review
 
 import com.iszhaoy.apitest.SensorReading
 import org.apache.flink.api.scala._
@@ -20,7 +20,7 @@ object Exec04 {
     env.setParallelism(1)
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
 
-    val fileDataStream = env.readTextFile(getClass.getClassLoader.getResource("sernsor.txt").getPath)
+    val fileDataStream = env.readTextFile(getClass.getClassLoader.getResource("sensor.txt").getPath)
       .map(x => {
         val dataArray: Array[String] = x.split(",")
         SensorReading(dataArray(0).trim, dataArray(1).trim.toLong, dataArray(2).trim.toDouble)

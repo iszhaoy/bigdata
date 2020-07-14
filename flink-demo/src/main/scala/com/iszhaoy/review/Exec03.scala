@@ -1,5 +1,4 @@
-package com.iszhaoy.review.wc
-
+package com.iszhaoy.review
 
 import com.iszhaoy.apitest.SensorReading
 import org.apache.flink.api.scala._

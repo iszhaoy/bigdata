@@ -1,4 +1,4 @@
-package com.iszhaoy.review.wc
+package com.iszhaoy.review
 
 import org.apache.flink.api.common.functions.ReduceFunction
 import org.apache.flink.api.common.state.{ReducingStateDescriptor, ValueState, ValueStateDescriptor}

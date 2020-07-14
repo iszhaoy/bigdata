@@ -1,4 +1,4 @@
-package com.iszhaoy.wc
+package com.iszhaoy.review
 
 import org.apache.flink.api.scala._
 

@@ -51,7 +51,7 @@ object TableApiTest {
 
     // 2. 连接外部系统读取数据
     // 2.1 读取文件数据
-    val filePath: String = getClass.getResource("/sernsor.txt").getPath
+    val filePath: String = getClass.getResource("/sensor.txt").getPath
 
     tableEnv.connect(new FileSystem().path(filePath))
       .withFormat(new OldCsv()) // 定义了从外部文件读取数据之后的格式化 （反序列化）

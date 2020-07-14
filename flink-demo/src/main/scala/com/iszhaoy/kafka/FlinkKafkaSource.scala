@@ -1,4 +1,4 @@
-package com.iszhaoy.kafkaSource
+package com.iszhaoy.kafka
 
 import java.util.Properties
 

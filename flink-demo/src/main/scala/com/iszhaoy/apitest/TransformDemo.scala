@@ -9,7 +9,7 @@ object TransformDemo {
 
     env.setParallelism(1)
 
-    val streamFormFile: DataStream[String] = env.readTextFile("flink-demo\\src\\main\\resources\\sernsor.txt")
+    val streamFormFile: DataStream[String] = env.readTextFile("flink-demo\\src\\main\\resources\\sensor.txt")
 
     val dataStream: DataStream[SensorReading] = streamFormFile.map(data => {
       val dataArray = data.split(",")

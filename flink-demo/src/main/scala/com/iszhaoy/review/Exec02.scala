@@ -1,4 +1,4 @@
-package com.iszhaoy.review.wc
+package com.iszhaoy.review
 
 import com.iszhaoy.apitest.{SensorReading, TimeIncreAlert, TimechangeAlert}
 import org.apache.flink.api.common.state.{ValueState, ValueStateDescriptor}

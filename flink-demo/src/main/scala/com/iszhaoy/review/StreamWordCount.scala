@@ -1,4 +1,4 @@
-package com.iszhaoy.wc
+package com.iszhaoy.review
 
 import org.apache.flink.api.java.utils.ParameterTool
 import org.apache.flink.streaming.api.scala._
