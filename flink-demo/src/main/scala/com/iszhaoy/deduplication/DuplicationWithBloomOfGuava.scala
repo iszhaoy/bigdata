@@ -4,7 +4,9 @@ import java.nio.charset.Charset
 
 import com.alibaba.fastjson.JSON
 import com.google.common.hash.{BloomFilter, Funnels}
-import com.iszhaoy.broadcast.Order
+import com.iszhaoy.joindim.Order
+import org.apache.flink.api.common.state.{ValueState, ValueStateDescriptor}
+import org.apache.flink.api.common.typeinfo.{TypeHint, TypeInformation}
 import org.apache.flink.configuration.Configuration
 import org.apache.flink.streaming.api.TimeCharacteristic
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction
@@ -50,26 +52,40 @@ class DeduplicateOrderProcessFunction() extends KeyedProcessFunction[String, Ord
   // 单个布隆过滤器需要8个哈希函数，其位图占用内存约114MB，压力不大
   private val BF_CARDINAL_THRESHOLD: Int = 1000000
   private val BF_FALSE_POSITIVE_RATE: Double = 0.01
-  @volatile var userBehaviorFilter: BloomFilter[String] = _
+  @volatile var userBehaviorFilterState: ValueState[BloomFilter[String]] = _
 
   override def open(parameters: Configuration): Unit = {
     val s: Long = System.currentTimeMillis
-    // 创建布隆过滤器
-    userBehaviorFilter = BloomFilter.create[String](Funnels.stringFunnel(Charset.forName("utf-8")), BF_CARDINAL_THRESHOLD,
-      BF_FALSE_POSITIVE_RATE);
+
+    userBehaviorFilterState = getRuntimeContext.getState(new
+        ValueStateDescriptor[BloomFilter[String]]("filter", TypeInformation.of(new TypeHint[BloomFilter[String]] {})))
+
     val e: Long = System.currentTimeMillis
     println("Created Guava BloomFilter, time cost: " + (e - s))
   }
 
   override def processElement(value: Order, ctx: KeyedProcessFunction[String, Order,
     Order]#Context, out: Collector[Order]): Unit = {
+    var userBehaviorFilter: BloomFilter[String] = userBehaviorFilterState.value()
+
+    if (userBehaviorFilter == null) {
+      // 创建布隆过滤器,初始化
+      userBehaviorFilter = BloomFilter.create[String](
+        Funnels.stringFunnel(Charset.forName("utf-8")), BF_CARDINAL_THRESHOLD, BF_FALSE_POSITIVE_RATE)
+    }
+
     val userId: String = value.userId
     val orderId: String = value.orderId
+
     // 如果userId和orderId相同，说明重复
     if (!userBehaviorFilter.mightContain(s"${userId}_${orderId}")) {
       userBehaviorFilter.put(s"${userId}_${orderId}")
       out.collect(value)
     }
+
+    // 更新状态
+    userBehaviorFilterState.update(userBehaviorFilter)
+
     ctx.timerService().registerProcessingTimeTimer(getTomorowZeroTimestampMS(ctx.timerService().currentProcessingTime(),
       8) + 1)
   }
@@ -77,15 +93,20 @@ class DeduplicateOrderProcessFunction() extends KeyedProcessFunction[String, Ord
   override def onTimer(timestamp: Long, ctx: KeyedProcessFunction[String, Order, Order]#OnTimerContext,
                        out: Collector[Order]): Unit = {
     val s: Long = System.currentTimeMillis
+
     // 每日零点创建布隆过滤器
-    userBehaviorFilter = BloomFilter.create[String](Funnels.stringFunnel(Charset.forName("utf-8")), BF_CARDINAL_THRESHOLD,
-      BF_FALSE_POSITIVE_RATE);
+    // 清空状态
+    userBehaviorFilterState.clear()
+    // 重置布隆过滤器
+    userBehaviorFilterState.update(BloomFilter.create[String](
+      Funnels.stringFunnel(Charset.forName("utf-8")), BF_CARDINAL_THRESHOLD, BF_FALSE_POSITIVE_RATE))
+
     val e: Long = System.currentTimeMillis
     println("Timer triggered & resetted Guava BloomFilter, time cost: " + (e - s))
   }
 
   override def close(): Unit = {
-    userBehaviorFilter = null
+    userBehaviorFilterState = null
   }
 
   def getTomorowZeroTimestampMS(now: Long, timeZone: Int): Long = {

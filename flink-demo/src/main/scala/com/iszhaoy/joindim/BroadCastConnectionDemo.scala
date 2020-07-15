@@ -1,4 +1,4 @@
-package com.iszhaoy.broadcast
+package com.iszhaoy.joindim
 
 import com.alibaba.fastjson.JSON
 import org.apache.flink.api.common.state.{BroadcastState, MapStateDescriptor, ReadOnlyBroadcastState}

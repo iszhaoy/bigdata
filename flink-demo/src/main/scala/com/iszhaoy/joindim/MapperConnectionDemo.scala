@@ -1,4 +1,4 @@
-package com.iszhaoy.broadcast
+package com.iszhaoy.joindim
 
 import java.util
 import java.util.concurrent.{Executors, ScheduledExecutorService, TimeUnit}

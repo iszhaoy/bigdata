@@ -3,7 +3,7 @@ package com.iszhaoy.deduplication
 import java.net.URL
 
 import com.alibaba.fastjson.JSON
-import com.iszhaoy.broadcast.Order
+import com.iszhaoy.joindim.Order
 import org.apache.flink.api.common.state.StateTtlConfig.{StateVisibility, UpdateType}
 import org.apache.flink.api.common.state.{StateTtlConfig, ValueState, ValueStateDescriptor}
 import org.apache.flink.api.common.time.Time
@@ -44,11 +44,11 @@ object DuplicationWithRocksDB {
     env.getCheckpointConfig.enableExternalizedCheckpoints(ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION)
 
     val rocksDBStateBackend = new RocksDBStateBackend("file:///tmp/flink-2020-07-14", true)
-    //rocksDBStateBackend.setPredefinedOptions(PredefinedOptions.FLASH_SSD_OPTIMIZED)
+    rocksDBStateBackend.setPredefinedOptions(PredefinedOptions.FLASH_SSD_OPTIMIZED)
     // 设置快照/恢复时用于传输文件的线程数。
-    rocksDBStateBackend.setNumberOfTransferThreads(2)
+    //rocksDBStateBackend.setNumberOfTransferThreads(2)
     // 设置合并压缩时清除ttl，状态TTL仅对时间特征为处理时间时生效方法已经过时，因为默认启用
-    rocksDBStateBackend.enableTtlCompactionFilter()
+    //rocksDBStateBackend.enableTtlCompactionFilter()
     env.setStateBackend(rocksDBStateBackend)
 
     val resource: URL = getClass.getResource("/order.log")
