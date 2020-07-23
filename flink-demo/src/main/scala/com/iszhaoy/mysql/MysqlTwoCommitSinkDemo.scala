@@ -1,5 +1,7 @@
 package com.iszhaoy.mysql
 
+import org.apache.flink.api.common.restartstrategy.RestartStrategies
+import org.apache.flink.api.common.time.Time
 import org.apache.flink.core.fs.Path
 import org.apache.flink.runtime.state.filesystem.FsStateBackend
 import org.apache.flink.streaming.api.CheckpointingMode
@@ -22,6 +24,12 @@ object MysqlTwoCommitSinkDemo {
     val env: StreamExecutionEnvironment = StreamExecutionEnvironment
       .getExecutionEnvironment
     env.setParallelism(1)
+
+    // 开启检查点是，最好手动定义重启策略
+    env.setRestartStrategy(RestartStrategies.fixedDelayRestart(
+      3,               // 重启次数
+      Time.seconds(15)  // 时延
+    ));
 
     // 使用checkpoint,每5秒保存一次
     env.enableCheckpointing(5000)
@@ -55,6 +63,8 @@ object MysqlTwoCommitSinkDemo {
     env.getCheckpointConfig.enableExternalizedCheckpoints(ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION)
     // 设置可容忍的检查点次数，如果检查点错误，任务会失败
     env.getCheckpointConfig.setTolerableCheckpointFailureNumber(1)
+    // 允许在有更近 savepoint 时回退到 checkpoint
+    env.getCheckpointConfig.setPreferCheckpointForRecovery(true);
 
     val socketSource: DataStream[String] = env.socketTextStream("hadoop01", 9999)
     socketSource.print("data")

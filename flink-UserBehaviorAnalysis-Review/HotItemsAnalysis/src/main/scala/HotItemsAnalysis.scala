@@ -7,7 +7,7 @@ import org.apache.flink.streaming.api.TimeCharacteristic
 import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
 import org.apache.flink.api.scala._
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction
-import org.apache.flink.streaming.api.scala.function.WindowFunction
+import org.apache.flink.streaming.api.scala.function.{ProcessAllWindowFunction, WindowFunction}
 import org.apache.flink.streaming.api.windowing.assigners.SlidingEventTimeWindows
 import org.apache.flink.streaming.api.windowing.time.Time
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow
@@ -53,8 +53,32 @@ object HotItemsAnalysis {
       // 对窗口内的元素聚合,统计
       .aggregate(new AggregateCount(), new WindowAggregate())
       // 对窗口进行分组
-      .keyBy(_.windowEnd)
-      .process(new TopN(3))
+      //.keyBy(_.windowEnd)
+      // 这么写不好，并行度是1
+      .windowAll(SlidingEventTimeWindows.of(Time.hours(1), Time.minutes(5)))
+      //.process(new TopN(3))
+      .process(new ProcessAllWindowFunction[ItemViewCount,String,TimeWindow] {
+        override def process(context: Context, elements: Iterable[ItemViewCount], out: Collector[String]): Unit = {
+          val list:ListBuffer[ItemViewCount] = new ListBuffer[ItemViewCount]
+          for (elem <- elements) {
+            list += elem
+          }
+          val itemList = list.sortBy(x => x.count)(Ordering.Long.reverse).take(3)
+          val result: StringBuilder = new StringBuilder
+
+          result.append("时间，").append(new Timestamp(context.window.getEnd - 1)).append("\n")
+          for (i <- itemList.indices) {
+            val itemViewCount: ItemViewCount = itemList(i)
+            result.append(i + 1).append(":")
+              .append("商品Id=").append(itemViewCount.itemId)
+              .append(",浏览量=").append(itemViewCount.count)
+              .append("\n")
+          }
+          result.append("==========================\n")
+          Thread.sleep(1000)
+          out.collect(result.toString)
+        }
+      })
 
     resultDataStrem.setParallelism(1).print("top n")
     env.execute("hot_items_analysis")

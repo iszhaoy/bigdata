@@ -54,6 +54,7 @@
         <module>hive-function</module>
         <module>sparkStreaming-kafka</module>
         <module>guava-demo</module>
+        <module>flink-table-1.11</module>
     </modules>
 
 </project>

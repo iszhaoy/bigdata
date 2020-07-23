@@ -1,0 +1,13 @@
+{"time":1594199426,"orderId":"1001","userId":"uid_001","goodsId":1,"price":1999,"cityId":834}
+{"time":1594199426,"orderId":"1001","userId":"uid_002","goodsId":2,"price":1999,"cityId":834}
+{"time":1594199426,"orderId":"1002","userId":"uid_001","goodsId":1,"price":1999,"cityId":835}
+{"time":1594199426,"orderId":"1002","userId":"uid_002","goodsId":3,"price":1999,"cityId":836}
+{"time":1594199426,"orderId":"1001","userId":"uid_003","goodsId":5,"price":1999,"cityId":834}
+{"time":1594199426,"orderId":"1001","userId":"uid_004","goodsId":4,"price":1999,"cityId":834}
+{"time":1594199426,"orderId":"1001","userId":"uid_005","goodsId":1,"price":1999,"cityId":834}
+{"time":1594199426,"orderId":"1001","userId":"uid_006","goodsId":1,"price":1999,"cityId":834}
+{"time":1594199426,"orderId":"1002","userId":"uid_006","goodsId":1,"price":1999,"cityId":834}
+{"time":1594199456,"orderId":"1001","userId":"uid_001","goodsId":1,"price":1999,"cityId":834}
+{"time":1594199481,"orderId":"1001","userId":"uid_001","goodsId":1,"price":1999,"cityId":834}
+{"time":1594199492,"orderId":"1001","userId":"uid_001","goodsId":1,"price":1999,"cityId":834}
+{"time":1594199431,"orderId":"1001","userId":"uid_001","goodsId":1,"price":1999,"cityId":834}
