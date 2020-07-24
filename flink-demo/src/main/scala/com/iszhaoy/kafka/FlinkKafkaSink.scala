@@ -6,6 +6,7 @@ import com.iszhaoy.apitest.SensorReading
 import org.apache.flink.api.common.serialization.SimpleStringSchema
 import org.apache.flink.streaming.api.scala._
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer011
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer011.Semantic
 import org.apache.flink.streaming.connectors.kafka.internals.KeyedSerializationSchemaWrapper
 
 object FlinkKafkaSink {
@@ -30,8 +31,8 @@ object FlinkKafkaSink {
     val kafkaProducer = new FlinkKafkaProducer011[String](
       "outputTopic",
       new KeyedSerializationSchemaWrapper[String](new SimpleStringSchema),
-      outprop)
-
+      outprop,Semantic.EXACTLY_ONCE)
+    kafkaProducer.setWriteTimestampToKafka(true)
     dataStream.addSink(kafkaProducer)
   }
 }

@@ -82,11 +82,11 @@ object KafkaStreamCommitOffsets {
            |INSERT INTO OFFSETS (KAFKA_GROUP, TOPIC, PARTITION, OFFSET, UNTILOFFSET)
            | VALUES ('${group_id}','${o.topic}',${o.partition}, ${o.fromOffset},${o.untilOffset})
            |  ON DUPLICATE KEY UPDATE
-           |  KAFKA_GROUP = '${group_id}',
-           |  TOPIC = '${o.topic}',
-           |  PARTITION =  ${o.partition},
-           |  OFFSET =${o.fromOffset} ,
-           |  UNTILOFFSET = ${o.untilOffset}
+           |  KAFKA_GROUP = VALUES(KAFKA_GROUP),
+           |  TOPIC = VALUES(TOPIC),
+           |  PARTITION = VALUES(PARTITION),
+           |  OFFSET = VALUES(OFFSET),
+           |  UNTILOFFSET = VALUES(UNTILOFFSET)
            |""".stripMargin)
       ps.executeUpdate()
       conn.commit()

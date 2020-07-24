@@ -51,7 +51,7 @@ object FlinkKafkaSource {
     //consumer.setStartFromLatest()
 
     //Flink从topic中指定的时间点开始消费，指定时间点之前的数据忽略
-    //consumer.setStartFromTimestamp(1593916371)
+    consumer.setStartFromTimestamp(1593916371000L)
 
     //从指定位置进行消费
     //val offsets = new util.HashMap[KafkaTopicPartition, lang.Long]()
