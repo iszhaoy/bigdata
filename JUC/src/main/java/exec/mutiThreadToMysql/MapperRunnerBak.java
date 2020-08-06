@@ -1,4 +1,4 @@
-package exec;
+package exec.mutiThreadToMysql;
 
 import java.io.*;
 import java.nio.ByteBuffer;

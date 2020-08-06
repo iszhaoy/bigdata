@@ -1,4 +1,4 @@
-package exec;
+package exec.mutiThreadToMysql;
 
 import java.io.File;
 import java.util.Objects;

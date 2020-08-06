@@ -1,7 +1,4 @@
-package exec;
-
-import exec.FileToBlock;
-import exec.JDBCUtils;
+package exec.mutiThreadToMysql;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
