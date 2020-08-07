@@ -39,18 +39,18 @@ object ScalarFunctionTest {
     // 使用自定义的hash函数
     val hashCode = new HashCode(0.50)
     sensorTable
-      .select('id,'ts,hashCode('id))
+      .select('id, 'ts, hashCode('id))
       .toAppendStream[Row].print("api")
 
     tableEnv.registerFunction("hashcode", hashCode)
-    tableEnv.createTemporaryView("sensor",sensorTable)
+    tableEnv.createTemporaryView("sensor", sensorTable)
     tableEnv.sqlQuery(
       """
         |select id, ts, hashcode(id)
         |from sensor
         |""".stripMargin
     )
-        .toAppendStream[Row].print("sql")
+      .toAppendStream[Row].print("sql")
 
     env.execute("job")
   }
