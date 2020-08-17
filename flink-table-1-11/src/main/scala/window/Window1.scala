@@ -44,7 +44,7 @@ object Window1 {
          |  watermark for `eventTime` as `eventTime` - interval '5' second
          |) with (
          | 'connector' = 'kafka',
-         | 'topic' = 'orderTopic',
+         | 'topic' = 'orderTopic3',
          | 'properties.bootstrap.servers' = 'hadoop01:9092',
          | 'properties.group.id' = 'order_group',
          | 'format' = 'json',
@@ -71,12 +71,19 @@ object Window1 {
          |)
          |""".stripMargin)
 
-    //tEnv.sqlQuery(
-    //  s"""
-    //     |select * from GoodsTable
-    //     |""".stripMargin)
-    //    .toAppendStream[Row]
-    //    .print("orderTable")
+    tEnv.sqlQuery(
+      s"""
+         |select * from OrderTable
+         |""".stripMargin)
+        .toAppendStream[Row]
+        .print("OrderTable")
+
+    tEnv.sqlQuery(
+      s"""
+         |select * from GoodsTable
+         |""".stripMargin)
+      .toAppendStream[Row]
+      .print("GoodsTable")
 
     // 关联商品维度，并求窗口10秒，最近5秒内商品维度分类coun, top 2
     val GoodsByNum: Table = tEnv.sqlQuery(
@@ -143,8 +150,8 @@ object Window1 {
          |  'connector.driver' = 'com.mysql.jdbc.Driver',
          |  'connector.username' = 'root',
          |  'connector.password' = 'root',
-         |  'connector.write.flush.max-rows' = '5000',
-         |  'connector.write.flush.interval' = '2s',
+         |  'connector.write.flush.max-rows' = '5000', // 5000条flush
+         |  'connector.write.flush.interval' = '2s', // 2秒flush 
          |  'connector.write.max-retries' = '3'
          |)
          |""".stripMargin
