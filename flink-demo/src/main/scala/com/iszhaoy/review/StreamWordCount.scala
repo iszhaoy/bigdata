@@ -1,8 +1,7 @@
 package com.iszhaoy.review
 
-import org.apache.flink.api.common.JobExecutionResult
 import org.apache.flink.api.common.accumulators.IntCounter
-import org.apache.flink.api.common.functions.{Partitioner, RichMapFunction}
+import org.apache.flink.api.common.functions.RichMapFunction
 import org.apache.flink.api.java.utils.ParameterTool
 import org.apache.flink.configuration.Configuration
 import org.apache.flink.streaming.api.scala._

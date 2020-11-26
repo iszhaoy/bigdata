@@ -41,16 +41,16 @@
     <!-- The following lines keep the log level of common libraries/connectors on
          log level INFO. The root logger does not override this. You have to manually
          change the log levels here. -->
-    <logger name="akka" level="WARN">
+    <logger name="akka" level="ERROR">
         <appender-ref ref="console"/>
     </logger>
-    <logger name="org.apache.kafka" level="WARN">
+    <logger name="org.apache.kafka" level="ERROR">
         <appender-ref ref="console"/>
     </logger>
-    <logger name="org.apache.hadoop" level="WARN">
+    <logger name="org.apache.hadoop" level="ERROR">
         <appender-ref ref="console"/>
     </logger>
-    <logger name="org.apache.zookeeper" level="WARN">
+    <logger name="org.apache.zookeeper" level="ERROR">
         <appender-ref ref="console"/>
     </logger>
 

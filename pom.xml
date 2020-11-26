@@ -16,7 +16,12 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
-
+    <repositories>
+        <repository>
+            <id>spring-plugin</id>
+            <url>https://repo.spring.io/plugins-release/</url>
+        </repository>
+    </repositories>
     <dependencies>
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -54,7 +59,8 @@
         <module>hive-function</module>
         <module>sparkStreaming-kafka</module>
         <module>guava-demo</module>
-        <module>flink-table-1.11</module>
+        <module>flink-table-1-11</module>
+        <module>kylin-demo</module>
     </modules>
 
 </project>

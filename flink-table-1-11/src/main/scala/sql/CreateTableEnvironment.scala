@@ -1,6 +1,7 @@
 package sql
 
 import org.apache.flink.api.scala.ExecutionEnvironment
+import org.apache.flink.streaming.api.TimeCharacteristic
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import org.apache.flink.table.api.bridge.scala.{BatchTableEnvironment, StreamTableEnvironment}
 import org.apache.flink.table.api.{EnvironmentSettings, TableEnvironment}
