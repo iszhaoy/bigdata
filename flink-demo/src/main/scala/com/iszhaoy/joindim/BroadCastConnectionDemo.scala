@@ -3,8 +3,9 @@ package com.iszhaoy.joindim
 import com.alibaba.fastjson.JSON
 import org.apache.flink.api.common.state.{BroadcastState, MapStateDescriptor, ReadOnlyBroadcastState}
 import org.apache.flink.api.common.typeinfo.BasicTypeInfo
-import org.apache.flink.streaming.api.functions.co.BroadcastProcessFunction
+import org.apache.flink.streaming.api.functions.co.{BroadcastProcessFunction, KeyedCoProcessFunction}
 import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment, _}
+import org.apache.flink.streaming.api.windowing.time.Time
 import org.apache.flink.util.Collector
 import org.slf4j.Logger
 
@@ -58,6 +59,16 @@ object BroadCastConnectionDemo {
       BasicTypeInfo.INT_TYPE_INFO,
       BasicTypeInfo.STRING_TYPE_INFO)
 
+
+    // 如果基于 Processing Time 做关联，我们可以利用 keyby 将两个数据流中关联字段值相同的数据划分到 KeyedCoProcessFunction 的同一个分区，然后用 ValueState 或者 MapState 将维表数据保存下来。
+    // 在普通数据流的一条记录进到函数时，到 State 中查找有无符合条件的 join 对象，若有则关联输出结果，若无则根据 join 的类型决定是直接丢弃还是与空值关联。这里要注意的是，State 的大小要尽量控制好。
+    // 首先是只保存每个 key 最新的维度数据值，其次是要给 State 设置好 TTL，让 Flink 可以自动清理。
+    //orderStream.keyBy(_.goodsId).connect(goodsDimStream.keyBy(_.goodsId)).process(new KeyedCoProcessFunction[String,Order,Goods,(Order,String)] {
+    //  override def processElement1(value: Order, ctx: KeyedCoProcessFunction[String, Order, Goods, (Order, String)]#Context, out: Collector[(Order, String)]): Unit = ???
+    //
+    //  override def processElement2(value: Goods, ctx: KeyedCoProcessFunction[String, Order, Goods, (Order, String)]#Context, out: Collector[(Order, String)]): Unit = ???
+    //})
+
     val resStream: DataStream[(Order, String)] = orderStream
       // 订单流与 维度信息的广播流进行 connect
       .connect(goodsDimStream.broadcast(GOODS_STATE))
@@ -82,6 +93,7 @@ object BroadCastConnectionDemo {
           if (!goods.isRemove) broadcastState.put(goods.goodsId, goods.goodsName) else broadcastState.remove(goods.goodsId)
         }
       })
+
     // 结果进行打印，生产环境应该是输出到外部存储
     resStream.print("res")
 

@@ -15,7 +15,7 @@ import org.apache.flink.types.Row
  * @version 1.0
  */
 
-case class ExplodeClass(id: String,name:String, phone: String)
+case class ExplodeClass(phone: String)
 
 object TableFunctionTest2 {
   def main(args: Array[String]): Unit = {
@@ -24,33 +24,32 @@ object TableFunctionTest2 {
     val tableEnv: StreamTableEnvironment = StreamTableEnvironment.create(env)
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
     env.setParallelism(1)
-    val path = getClass.getClassLoader.getResource("explode/test.log").getPath
+    val path = getClass.getClassLoader.getResource("explode/test1.log").getPath
     val dataStream: DataStream[ExplodeClass] = env.readTextFile(path).map(data => {
       val dataArry: Array[String] = data.split(",")
-      ExplodeClass(dataArry(0), dataArry(1).trim,dataArry(2).trim)
+      ExplodeClass(dataArry(0).trim)
     })
 
-    val ExplodeClassTable: Table = tableEnv.fromDataStream(dataStream, 'id,'name, 'phone)
+    val ExplodeClassTable: Table = tableEnv.fromDataStream(dataStream, 'data)
 
-    val split = new Split("/")
+    val split = new Split()
 
-    tableEnv.createTemporaryView("ExplodeClassTable", ExplodeClassTable)
-    tableEnv.registerFunction("split", split)
+    tableEnv.createTemporaryView("temp_df", ExplodeClassTable)
+    tableEnv.registerFunction("explode", split)
     tableEnv.sqlQuery(
       """
-        | select id,name,temp.p
+        | select T.data
         | from
-        | ExplodeClassTable,lateral table(split(phone)) as temp(p)
+        | temp_df,lateral table(explode(data,'/')) as T(data)
         |""".stripMargin
     ).toAppendStream[Row].print("sql")
-
 
     env.execute("job")
 
   }
 
-  class Split(sep: String) extends TableFunction[String] {
-    def eval(str: String): Unit = {
+  class Split extends TableFunction[String] {
+    def eval(str: String,sep : String): Unit = {
       str.split(sep).foreach(
         (p: String) => collect(p)
       )

@@ -28,7 +28,7 @@ create external table test_partition
     dname  string,
     loc    string
 )
-    partitioned by (month string)
+    partitioned by (`month` string)
     row format delimited
         fields terminated by '\t';
 

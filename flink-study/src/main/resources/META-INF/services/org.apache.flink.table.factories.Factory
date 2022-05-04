@@ -1,0 +1,3 @@
+table.source.socket.SocketDynamicTableFactory
+table.source.socket.ChangelogCsvFormatFactory
+table.source.redis.RedisDynamicTableFactory

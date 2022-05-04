@@ -12,21 +12,24 @@ object StreamWordCount {
     val params: ParameterTool = ParameterTool.fromArgs(args)
 
     //val host: String = params.get("host")
-    val host: String = "hadoop01"
+    val host: String = "localhost"
     //val port: Int = params.getInt("port")
     val port: Int = 9999
 
     // 创建一个流处理执行环境
     //val env: StreamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment
     val env: StreamExecutionEnvironment = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(new Configuration())
-
+    env.setParallelism(2)
     val textDataStream: DataStream[String] = env.socketTextStream(host, port)
 
     val wordCountDataStream: DataStream[(String, Int)] = textDataStream.flatMap(_.split(" "))
       // 过滤掉不为空的数据
       .filter(_.nonEmpty)
       .map(new MyMapper)
-      .keyBy(0)
+      .keyBy(x => {
+        println("keyby:" + x)
+        x._1
+      })
       .sum(1)
 
     // 打印输出
@@ -47,6 +50,7 @@ class MyMapper extends RichMapFunction[String, (String, Int)] {
   }
 
   override def map(value: String): (String, Int) = {
+    println("map:" + value)
     this.numsLines.add(1)
     (value, 1)
   }

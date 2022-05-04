@@ -1,0 +1,33 @@
+./kafka-console-producer.sh --broker-list kafka:9092 --topic Orders
+./kafka-console-producer.sh --broker-list kafka:9092 --topic Rates
+
+./kafka-console-consumer.sh --bootstrap-server kafka:9092  --topic Orders --from-beginning
+
+./kafka-topics.sh --zookeeper zookeeper:2181 --list
+
+./kafka-topics.sh --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --create --topic Orders
+./kafka-topics.sh --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --create --topic Rates
+
+curl -XDELETE localhost:9200/index_agg_window_table
+curl -XDELETE localhost:9200/index_agg_table
+
+oid001,US Dollar,2021-01-10 12:00:05
+oid011,US Dollar,2021-01-10 12:00:11
+oid002,Euro,2021-01-10 12:01:08
+oid003,Yen,2021-01-10 12:02:10
+oid004,Euro,2021-01-10 12:02:12
+oid014,US Dollar,2021-01-10 12:02:13
+oid005,Euro,2021-01-10 12:02:16
+oid006,Euro,2021-01-10 12:02:18
+
+US Dollar,102,2021-01-10 12:00:10
+US Dollar,103,2021-01-10 12:00:11
+Euro,114,2021-01-10 12:01:08
+Yen,1,2021-01-10 12:02:05
+Euro,116,2021-01-10 12:02:10
+Euro,100,2021-01-10 12:02:14
+Yen,2,2021-01-10 12:02:16
+Yen,1,2021-01-10 12:05:20
+
+
+

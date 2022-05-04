@@ -16,7 +16,6 @@ public class Demo {
         ClassLoader myClassLoader = new ClassLoader() {
             @Override
             protected Class<?> findClass(String name) throws ClassNotFoundException {
-
                 try {
                     String fileName = name.substring(name.lastIndexOf(".") + 1) + ".class";
                     InputStream inputStream = getClass().getResourceAsStream(fileName);

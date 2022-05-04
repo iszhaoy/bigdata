@@ -1,15 +1,15 @@
 package com.iszhaoy.join
 
-import java.lang
-import java.text.SimpleDateFormat
-
 import org.apache.flink.api.common.functions.{CoGroupFunction, JoinFunction}
 import org.apache.flink.configuration.Configuration
 import org.apache.flink.streaming.api.TimeCharacteristic
-import org.apache.flink.streaming.api.functions.co.ProcessJoinFunction
 import org.apache.flink.streaming.api.scala.{StreamExecutionEnvironment, _}
+import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows
 import org.apache.flink.streaming.api.windowing.time.Time
 import org.apache.flink.util.Collector
+
+import java.lang
+import java.text.SimpleDateFormat
 
 case class LeftClass(key: String, value: String, datetime: Long)
 
@@ -26,14 +26,18 @@ object JoinTest {
     val leftLog = getClass.getResource("/testJoin/left.log").getPath
     val rightLog = getClass.getResource("/testJoin/right.log").getPath
 
-    val leftStream = env.readTextFile(leftLog)
+    val leftStream = env
+      .socketTextStream("localhost",9998)
+      //.readTextFile(leftLog)
       .map(data => {
         val sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
         val arrs = data.split(",")
         LeftClass(arrs(0).trim, arrs(1).trim, sdf.parse(arrs(2)).getTime)
       }).assignAscendingTimestamps(_.datetime)
 
-    val rightStream = env.readTextFile(rightLog)
+    val rightStream = env
+      //.readTextFile(rightLog)
+      .socketTextStream("localhost",9999)
       .map(data => {
         val sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
         val arrs = data.split(",")
@@ -45,23 +49,23 @@ object JoinTest {
     //   .window(TumblingEventTimeWindows.of(Time.seconds(30)))
     //   .apply(new InnerJoinFunction())
 
-    // val resultStream = leftStream.coGroup(rightStream)
-    //   .where(_.key).equalTo(_.key)
-    //   .window(TumblingEventTimeWindows.of(Time.seconds(30)))
-    //   .apply(new LeftJoinFunction())
-    //   .apply(new RightJoinFunction())
+     val resultStream = leftStream.coGroup(rightStream)
+       .where(_.key).equalTo(_.key)
+       .window(TumblingEventTimeWindows.of(Time.seconds(30)))
+       .apply(new LeftJoinFunction())
+       //.apply(new RightJoinFunction())
 
-    val resultStream = leftStream
-      .keyBy(_.key)
-      .intervalJoin(rightStream.keyBy(_.key))
-      .between(Time.seconds(-10), Time.seconds(20))
-      .lowerBoundExclusive()
-      .upperBoundExclusive()
-      .process(new ProcessJoinFunction[LeftClass, RightClass, ResultClass]() {
-        override def processElement(left: LeftClass, right: RightClass, ctx: ProcessJoinFunction[LeftClass, RightClass, ResultClass]#Context, out: Collector[ResultClass]): Unit = {
-          out.collect(ResultClass(left.key, left.value, right.value, left.datetime))
-        }
-      })
+    //val resultStream = leftStream
+    //  .keyBy(_.key)
+    //  .intervalJoin(rightStream.keyBy(_.key))
+    //  .between(Time.seconds(-10), Time.seconds(20))
+    //  .lowerBoundExclusive()
+    //  .upperBoundExclusive()
+    //  .process(new ProcessJoinFunction[LeftClass, RightClass, ResultClass]() {
+    //    override def processElement(left: LeftClass, right: RightClass, ctx: ProcessJoinFunction[LeftClass, RightClass, ResultClass]#Context, out: Collector[ResultClass]): Unit = {
+    //      out.collect(ResultClass(left.key, left.value, right.value, left.datetime))
+    //    }
+    //  })
 
     resultStream.print("test")
     env.execute("JoinTest")
@@ -69,6 +73,7 @@ object JoinTest {
 }
 
 class InnerJoinFunction() extends JoinFunction[LeftClass, RightClass, ResultClass] {
+
   override def join(first: LeftClass, second: RightClass): ResultClass = {
     ResultClass(first.key, first.value, second.value, first.datetime)
   }
@@ -76,6 +81,7 @@ class InnerJoinFunction() extends JoinFunction[LeftClass, RightClass, ResultClas
 
 
 class LeftJoinFunction() extends CoGroupFunction[LeftClass, RightClass, ResultClass] {
+
   override def coGroup(first: lang.Iterable[LeftClass], second: lang.Iterable[RightClass], out: Collector[ResultClass]): Unit = {
     import scala.collection.JavaConversions._
     val leftList = first.toList

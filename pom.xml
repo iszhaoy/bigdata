@@ -53,14 +53,15 @@
         <module>hbase-weibo</module>
         <module>flink-UserBehaviorAnalysis</module>
         <module>scala-demo</module>
-        <module>flink-UserBehaviorAnalysis-Review</module>
         <module>JUC</module>
         <module>DataWareHouse</module>
         <module>hive-function</module>
         <module>sparkStreaming-kafka</module>
         <module>guava-demo</module>
-        <module>flink-table-1-11</module>
+        <module>flink-study</module>
         <module>kylin-demo</module>
+        <module>java-demo</module>
+        <module>structured_streaming</module>
     </modules>
 
 </project>

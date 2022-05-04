@@ -1,7 +1,5 @@
 package com.iszhaoy.deduplication
 
-import java.net.URL
-
 import com.alibaba.fastjson.JSON
 import com.iszhaoy.joindim.Order
 import org.apache.flink.api.common.state.StateTtlConfig.{StateVisibility, UpdateType}
@@ -9,11 +7,13 @@ import org.apache.flink.api.common.state.{StateTtlConfig, ValueState, ValueState
 import org.apache.flink.api.common.time.Time
 import org.apache.flink.configuration.Configuration
 import org.apache.flink.contrib.streaming.state.{PredefinedOptions, RocksDBStateBackend}
-import org.apache.flink.streaming.api.{CheckpointingMode, TimeCharacteristic}
 import org.apache.flink.streaming.api.environment.CheckpointConfig.ExternalizedCheckpointCleanup
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction
 import org.apache.flink.streaming.api.scala._
+import org.apache.flink.streaming.api.{CheckpointingMode, TimeCharacteristic}
 import org.apache.flink.util.Collector
+
+import java.net.URL
 
 /**
  * this is a study project
@@ -68,7 +68,6 @@ object DuplicationWithRocksDB {
 
 class RocksDBDeDuplicationFunction() extends KeyedProcessFunction[(String, String), Order, Order] {
   private var existState: ValueState[Boolean] = _
-
 
   override def open(parameters: Configuration): Unit = {
     // 设置状态TTL配置

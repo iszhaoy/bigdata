@@ -25,7 +25,6 @@ public class JDBCUtils {
             pro.load(JDBCUtils.class.getClassLoader().getResourceAsStream("config.properties"));
             ds = DruidDataSourceFactory.createDataSource(pro);
         } catch (Exception e) {
-            // TODO 自动生成的 catch 块
             e.printStackTrace();
         }
         System.out.println(ds);

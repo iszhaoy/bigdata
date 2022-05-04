@@ -16,8 +16,8 @@ public class GlobalEnv {
     public static final long BLOCK_SIZE = 300000L;
     public static final long BATCH_SIZE = 5000;
 
-    private static BlockingQueue<FileSplit> splitQueue=new LinkedBlockingQueue<>();
-    private static List<FileSplit> splitList =new LinkedList<>();
+    private static BlockingQueue<FileSplit> splitQueue = new LinkedBlockingQueue<>();
+    private static List<FileSplit> splitList = new LinkedList<>();
 
     public static BlockingQueue<FileSplit> getSplitQueue() {
         return splitQueue;

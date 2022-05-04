@@ -34,6 +34,7 @@ object AggregateDemo {
         val dataArr: Array[String] = data.split(",")
         SensorReading(dataArr(0).trim, dataArr(1).trim.toLong, dataArr(2).trim.toDouble)
       })
+      //.assignTimestampsAndWatermarks()
       .assignAscendingTimestamps(_.timestamp * 1000L)
 
     val aggregateStream: DataStream[CountView] = dataStream.keyBy(_.id)
